@@ -1,0 +1,20 @@
+<div style="text-align: center; margin: auto;">
+    <h1 mat-dialog-title>Add Task</h1>
+  
+    <div mat-dialog-content   >
+      <mat-form-field>
+        <input matInput [(ngModel)]="task.name" placeholder="Task Name">
+      </mat-form-field>
+    </div>
+  
+    <div mat-dialog-content>
+      <mat-form-field>
+        <textarea matInput cols="10" rows="10" [(ngModel)]="task.description" placeholder="Task Description"></textarea>
+      </mat-form-field>
+    </div>
+  
+    <div mat-dialog-actions style="display: block; align-items: center;">
+      <button mat-button [disabled]="task.name === ''" [mat-dialog-close]="task" cdkFocusInitial>Ok</button>
+      <button mat-button (click)="onNoClick()">Cancel</button>
+    </div>
+  </div>

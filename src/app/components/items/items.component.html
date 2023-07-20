@@ -1,0 +1,79 @@
+<div style="height: 7%; padding: 5px; top: 10px; position: absolute; right: 20px; display: flex; flex-direction: row;">
+  <div *ngIf="selected.length == 0;else elseBlock">
+    <button type="button" class="btn btn-success" (click) = "addTaskDialog()">Add Task</button>
+  </div>
+  <ng-template #elseBlock>
+    <button type="button" class="btn btn-success" (click) = "onCompleted()">Complete Task(s)</button>
+    <div class="p-1"></div>
+    <button type="button" class="btn btn-danger" (click) = "onDeleteTasks()">Delete Task(s)</button>
+  </ng-template>
+</div>
+<div class="todo-container">
+  <div *ngIf="isSelected" style="flex-direction: row; display: flex;">
+    <div class="example-container">
+      <h2 style="text-align: center;">
+        To Do
+      </h2>
+      <div cdkDropList #todoList="cdkDropList" [cdkDropListData]="todotasks" [cdkDropListConnectedTo]="[doneList]" class="example-list"
+       (cdkDropListDropped)="drop($event)">
+        <div class="example-box" *ngFor="let task of todotasks" cdkDrag style="cursor: pointer;">
+          <mat-accordion style="width: 100%;">
+            <mat-expansion-panel hideToggle [disabled]="task.description == '' || task.description == null">
+              <mat-expansion-panel-header style="height: 60px; color: black;">
+                <mat-panel-title>
+                  <mat-checkbox (click)="onSelected(task)">&nbsp;&nbsp;{{task.name}}</mat-checkbox>
+                </mat-panel-title>
+                <mat-panel-description style="justify-content: space-between;">
+                  <div></div>
+                  <div style=" display: flex; flex-direction: row;">
+                    <i class="fa fa-pencil" style="color:black; font-size: 20px;" (click)="editTask(task)" matTooltip="Edit"></i>
+                    <div class="p-2"></div>
+                    <i class="fa fa-trash-o" style="color:red; font-size: 20px;" (click)="onDeleteTask(task)" matTooltip="Delete"></i>
+                  </div>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <p style="white-space: pre-wrap;" *ngIf="task.description !== '' && task.description != null"> 
+                {{"\n"+task.description}}
+              </p>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </div>
+    </div>
+    <br>
+    <div class="example-container">
+      <h2 style="text-align: center;">
+        Completed
+      </h2>
+      <div cdkDropList #doneList="cdkDropList" [cdkDropListData]="completedtasks" [cdkDropListConnectedTo]="[todoList]" class="example-list"
+       (cdkDropListDropped)="drop($event)">
+        <div class="example-box" *ngFor="let task of completedtasks" style="cursor: pointer;">
+          <mat-accordion style="width: 100%;">
+            <mat-expansion-panel hideToggle [disabled]="task.description == '' || task.description == null">
+              <mat-expansion-panel-header style="height: 60px;">
+                <mat-panel-title>
+                  <i class="fa fa-check" style="color: green; font-size: 20px;" matTooltip="Completed"></i>
+                  &nbsp;&nbsp;&nbsp;&nbsp;
+                  <div style="text-decoration: line-through; color: black;">
+                    {{task.name}}
+                  </div>
+                </mat-panel-title>
+                <mat-panel-description style="justify-content: space-between;">
+                  <div></div>
+                  <div style=" display: flex; flex-direction: row;">
+                    
+                    <div class="p-2"></div>
+                    <i class="fa fa-trash-o" style="color:red; font-size: 20px;" (click)="onDeleteTask(task)" matTooltip="Delete"></i>
+                  </div>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <p style="white-space: pre-wrap;" *ngIf="task.description !== '' && task.description != null"> 
+                {{"\n"+task.description}}
+              </p>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

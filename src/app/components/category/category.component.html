@@ -1,0 +1,14 @@
+<div style=" height: 100vh;">
+    <app-sidebar (addCategory)="addCategory($event)" [values]="strings" (onSelect)="onSelect($event)" (onEdit)="editCategory($event)" (onDelete)="deleteCategory($event)">
+    </app-sidebar>
+    <app-items 
+    (addTask)="onAddTask($event)" 
+    (deleteTask)="deleteTask($event)" 
+    [todotasks]="todotasks" 
+    [completedtasks]="completedtasks" 
+    (onToggle) = "onToggle($event)" 
+    (onEdit)="editTask($event)"
+    [isSelected]="selectedCategory != '' && selectedCategory != null">
+    </app-items>
+</div>
+
