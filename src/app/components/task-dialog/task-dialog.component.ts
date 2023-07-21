@@ -11,7 +11,8 @@ import { Component, Inject} from '@angular/core';
 export class TaskDialogComponent{
   title: string = ""
   task: Task = {
-    "completed": false,
+    "id": String(Number(localStorage.getItem("taskID")) + 1),
+    "status": "todo",
     "description": "",
     "name": ""
   }
@@ -21,7 +22,6 @@ export class TaskDialogComponent{
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.title = data.title;
-    this.task = data.task;
   }
 
   onNoClick(): void {

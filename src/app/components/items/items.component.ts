@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { TaskDialogComponent } from '../task-dialog/task-dialog.component';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-items',
@@ -12,14 +13,14 @@ import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/dr
 export class ItemsComponent implements OnInit {
   @Output() addTask : EventEmitter<Task> = new EventEmitter();
   @Output() deleteTask : EventEmitter<Task> = new EventEmitter();
-  @Output() onToggle : EventEmitter<Task> = new EventEmitter();
   @Output() onEdit : EventEmitter<Task[]> = new EventEmitter();
 
   @Input() completedtasks: Task[] = [];
   @Input() todotasks: Task[]= [];
+  @Input() pendingtasks: Task[]= [];
   @Input() isSelected: boolean = false;
 
-  selected: Task[] = [];
+  currentCategoryTasks: Task[] = [];
 
   constructor(public dialog: MatDialog) { }
 
@@ -27,32 +28,23 @@ export class ItemsComponent implements OnInit {
   }
 
   onSelected(str: Task){
-    if(this.selected.indexOf(str) == -1)
-      this.selected.push(str);
+    if(this.currentCategoryTasks.indexOf(str) == -1)
+      this.currentCategoryTasks.push(str);
     else
-      this.selected.splice(this.selected.indexOf(str), 1);
-    console.log(this.selected);
+      this.currentCategoryTasks.splice(this.currentCategoryTasks.indexOf(str), 1);
   }
 
-  addTaskDialog(){
-    let task: Task = {
-      "completed": false,
-      "name" : "",
-      "description" : ""
-    };
+  addTaskDialog(){   
     const dialogRef = this.dialog.open(TaskDialogComponent, {
-      width: '300px',
       data: {
-        "task": task,
         "title": "Add"
       }
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      if(result.name != "" && result != null && result.name != null){
-        task = result;
+      if(result != null && result.name != "" && result.name != null){
         this.addTask.emit(
-          task
+          result
         );
       }
     });
@@ -60,7 +52,6 @@ export class ItemsComponent implements OnInit {
 
   editTask(task: Task){
     const dialogRef = this.dialog.open(TaskDialogComponent, {
-      width: '300px',
       data: {
         "task": task,
         "title": "Edit"
@@ -72,28 +63,54 @@ export class ItemsComponent implements OnInit {
         this.onEdit.emit(
           [task, result]
         );
-
-        task = result;
       }
     });   
   }
 
   onDeleteTasks(){
-    this.selected.forEach(task => {
-      this.deleteTask.emit(task);
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        "title": "Delete Task ",
+        "status": "delete the selected tasks?"
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {     
+      if(result != null){
+        this.currentCategoryTasks.forEach(task => {
+          this.deleteTask.emit(task);
+        });
+      }
     });
   }
 
   onDeleteTask(task: Task){
-    if(this.selected.indexOf(task) != -1){
-      this.selected.splice(this.selected.indexOf(task), 1);
-    }
-    this.deleteTask.emit(task);
+    const dialogRef = this.dialog.open(AlertDialogComponent, {
+      data: {
+        "title": "Delete Task ",
+        "status": "delete this task?"
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {     
+      if(result != null){
+        if(this.currentCategoryTasks.indexOf(task) != -1){
+          this.currentCategoryTasks.splice(this.currentCategoryTasks.indexOf(task), 1);
+        }
+        this.deleteTask.emit(task);
+      }
+    });
   }
 
-  onCompleted(){
-    this.selected.forEach(task => {
-      this.onToggle.emit(task);
+  onUpdateStatus(status: string){
+    this.currentCategoryTasks.forEach(task => {
+      let data = {
+        ...task,
+        status: status
+      };
+
+      this.onEdit.emit([task, data]);
+      this.currentCategoryTasks = [];
     });
   }
 
@@ -105,11 +122,24 @@ export class ItemsComponent implements OnInit {
         event.currentIndex
       );
     } else {
+      
       let task = event.previousContainer.data[event.previousIndex];
-      if(this.selected.indexOf(task) != -1){
-        this.selected.splice(this.selected.indexOf(task), 1);
+      if(this.currentCategoryTasks.indexOf(task) != -1){
+        this.currentCategoryTasks.splice(this.currentCategoryTasks.indexOf(task), 1);
       }
-      this.onToggle.emit(task);
+      let status = "todo";
+
+      if(event.container.id == "cdk-drop-list-1")
+        status = "pending";
+      else if(event.container.id == "cdk-drop-list-2")
+        status = "completed";
+    
+      let data = {
+        ...task,
+        status: status
+      }
+
+      this.onEdit.emit([task, data]);
       transferArrayItem(
         event.previousContainer.data,
         event.container.data,

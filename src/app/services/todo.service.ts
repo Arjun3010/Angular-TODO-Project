@@ -18,9 +18,9 @@ export class TodoService {
 
     let categories: Category[] = [];
 
-    jsonData.categories.forEach((element : string) => {
+    jsonData.categories.forEach((category : string) => {
       categories.push(
-        this.parseCategory(element)
+        this.parseCategory(category)
       );
     });
 
@@ -29,8 +29,8 @@ export class TodoService {
 
   setTODO(category: Category[]) : void{
     let categories: string[] = [];
-    category.forEach(element => {
-      categories.push(this.jsonifyCategory(element));
+    category.forEach(category => {
+      categories.push(this.jsonifyCategory(category));
     });
 
     localStorage.setItem(
@@ -42,25 +42,27 @@ export class TodoService {
   }
 
   jsonifyCategory(category : Category) : string{
-    let a : string[] = [];
+    let tasks : string[] = [];
     
-    category.tasks.forEach(element => {
-      a.push(
-        this.jsonifyTask(element)
+    category.tasks.forEach(task => {
+      tasks.push(
+        this.jsonifyTask(task)
       );
     });
 
     return JSON.stringify({
+      id: category.id,
       category: category.category,
-      tasks: a
+      tasks: tasks
     });
   }
 
   jsonifyTask(task: Task) : string{
     return JSON.stringify({
+      id: task.id,
       name: task.name,
       description: task.description,
-      completed: task.completed
+      status: task.status
     });
   }
 
@@ -76,6 +78,7 @@ export class TodoService {
     });
 
     let category: Category = {
+      "id": jsonData.id,
       "category": jsonData.category,
       "tasks": tasks
     }
@@ -84,10 +87,11 @@ export class TodoService {
   }
 
   parseTask(tsk: string) : Task{
-    let data = JSON.parse(tsk);
+    let data = JSON.parse(tsk) as Task;
     
     let task: Task = {
-      "completed": data.completed,
+      "id": data.id,
+      "status": data.status,
       "name": data.name,
       "description": data.description,
     };

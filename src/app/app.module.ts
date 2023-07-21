@@ -11,6 +11,7 @@ import { SidebarComponent } from './components/sidebar/sidebar.component';
 import { TaskDialogComponent } from './components/task-dialog/task-dialog.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { AlertDialogComponent } from './components/alert-dialog/alert-dialog.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { FormsModule } from '@angular/forms';
     CategoryDialogComponent,
     ItemsComponent,
     SidebarComponent,
-    TaskDialogComponent
+    TaskDialogComponent,
+    AlertDialogComponent
   ],
   imports: [
     BrowserModule,

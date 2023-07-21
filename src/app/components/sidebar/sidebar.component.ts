@@ -1,6 +1,7 @@
 import { CategoryDialogComponent } from './../category-dialog/category-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { Component, OnInit, Output, EventEmitter, Input } from '@angular/core';
+import { AlertDialogComponent } from '../alert-dialog/alert-dialog.component';
 
 @Component({
   selector: 'app-sidebar',
@@ -14,7 +15,7 @@ export class SidebarComponent implements OnInit {
   @Output() onDelete : EventEmitter<string> = new EventEmitter();
   @Input() values: string[] = [];
 
-  selected : string = "";
+  selectedCategory : string = "";
 
   constructor(public dialog: MatDialog) { }
 
@@ -23,7 +24,6 @@ export class SidebarComponent implements OnInit {
 
   onAdd(){
     const dialogRef = this.dialog.open(CategoryDialogComponent, {
-      width: '250px',
       data: {
         "title": "Add",
         "category": ""
@@ -37,32 +37,47 @@ export class SidebarComponent implements OnInit {
   }
 
   deleteCategory(){
-    this.onDelete.emit("Deleted Succesfully....");
+    if(this.selectedCategory != ''){
+      const dialogRef = this.dialog.open(AlertDialogComponent, {
+        data: {
+          "title": "Delete Category ",
+          "status": "delete " + this.selectedCategory + " category?"
+        }
+      });
+  
+      dialogRef.afterClosed().subscribe(result => {     
+        if(result != null){
+          this.selectedCategory = '';
+          this.onDelete.emit("");
+        }
+      });
+    }
+    
   }
 
   onSelected(str: string){
-    if(str === this.selected){
+    if(str === this.selectedCategory){
       str = "";
     }
     
-    this.selected = str;
-    this.onSelect.emit(this.selected);
+    this.selectedCategory = str;
+    this.onSelect.emit(this.selectedCategory);
     
   }
 
   editCategory(){
-    if(this.selected != ""){
+    if(this.selectedCategory != ""){
       const dialogRef = this.dialog.open(CategoryDialogComponent, {
         autoFocus: true,
         data: {
           "title": "Edit",
-          "category": this.selected
+          "category": this.selectedCategory
         }
       });
   
       dialogRef.afterClosed().subscribe(result => {      
         if(result !== "" && result != null){
-          this.selected = result;
+          this.selectedCategory = result;
           this.onEdit.emit(result);
         }
       });

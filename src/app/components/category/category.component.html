@@ -4,9 +4,9 @@
     <app-items 
     (addTask)="onAddTask($event)" 
     (deleteTask)="deleteTask($event)" 
-    [todotasks]="todotasks" 
+    [todotasks]="todotasks"
+    [pendingtasks]="pendingtasks" 
     [completedtasks]="completedtasks" 
-    (onToggle) = "onToggle($event)" 
     (onEdit)="editTask($event)"
     [isSelected]="selectedCategory != '' && selectedCategory != null">
     </app-items>

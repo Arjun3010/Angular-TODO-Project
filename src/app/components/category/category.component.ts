@@ -15,6 +15,7 @@ export class CategoryComponent implements OnInit {
 
   completedtasks: Task[] = [];
   todotasks: Task[]= [];
+  pendingtasks: Task[] = [];
   
   constructor(private todoService : TodoService) {}
 
@@ -31,9 +32,15 @@ export class CategoryComponent implements OnInit {
 
       this.categories.push(
         {
+          "id": String(Number(localStorage.getItem("categoryID")) + 1),
           'category' : category,
           'tasks' : []
         }
+      );
+
+      localStorage.setItem(
+        "categoryID", 
+        String(Number(localStorage.getItem("categoryID")) + 1)
       );
 
       this.todoService.setTODO(this.categories);
@@ -53,7 +60,13 @@ export class CategoryComponent implements OnInit {
     this.categories.splice(ind,1);
     this.strings.splice(ind,1);
     this.completedtasks = [];
+    this.pendingtasks = [];
     this.todotasks = [];
+    this.selectedCategory = '';
+    if(this.categories.length == 0){
+      localStorage.setItem("categoryID", "0");
+      localStorage.setItem("taskID", "0");
+    }
     this.todoService.setTODO(this.categories);
   }
 
@@ -66,12 +79,16 @@ export class CategoryComponent implements OnInit {
     let index = this.categories.findIndex(x => x.category == this.selectedCategory);
     this.categories[index].tasks.push(task);
     this.todoService.setTODO(this.categories);
+    localStorage.setItem(
+      "taskID", 
+      String(Number(localStorage.getItem("taskID")) + 1)
+    );
     this.updateTasks(index);
   }
 
   editTask(task: Task[]){
     let index = this.categories.findIndex(x => x.category == this.selectedCategory);
-    let ind = this.categories[index].tasks.indexOf(task[0]);
+    let ind = this.categories[index].tasks.findIndex(x => x.id === task[0].id);
     this.categories[index].tasks[ind] = task[1];
     this.todoService.setTODO(this.categories);
     this.updateTasks(index);
@@ -85,40 +102,23 @@ export class CategoryComponent implements OnInit {
     this.updateTasks(index);
   }
 
-  onToggle(value: Task){
-    let index = this.categories.findIndex(x => x.category === this.selectedCategory);
-    let ind = this.categories[index].tasks.findIndex(x => x === value);
-
-    this.categories[index].tasks.splice(ind, 1);
-    value.completed = !value.completed;
-
-    if(value.completed){
-      this.categories[index].tasks.push(value);
-    }
-    else{
-      ind = this.categories[index].tasks.findIndex(x => x.completed == true) != -1 ? this.categories[index].tasks.findIndex(x => x.completed == true) : ind;
-      if(ind == -1){
-        ind = 1;
-      }
-      this.categories[index].tasks.splice(ind, 0, value);
-    }
-
-    this.todoService.setTODO(this.categories);
-
-    this.updateTasks(index);
-
-  }
-
   updateTasks(index: number){
+    console.log('Index: ' + index)
+    console.log('Categories: ' + this.categories[index].category )
     this.todotasks = [];
+    this.pendingtasks = [];
     this.completedtasks = [];
     
-    this.categories[index].tasks.forEach(element => {
-      if(element.completed)
-        this.completedtasks.push(element);
+    this.categories[index].tasks.forEach(task => {
+      if(task.status == "completed")
+        this.completedtasks.push(task);
+      else if(task.status == "pending")
+        this.pendingtasks.push(task);
       else
-        this.todotasks.push(element)
+        this.todotasks.push(task);
     });
+
+    console.log(this.todotasks, this.completedtasks, this.pendingtasks)
   }
 
 }

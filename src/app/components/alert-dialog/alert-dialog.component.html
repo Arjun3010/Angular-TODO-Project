@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>{{title}}</h1>
+<div mat-dialog-content>
+    Do you want to {{status}}
+</div>
+
+<div mat-dialog-actions>
+    <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Ok</button>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+</div>
