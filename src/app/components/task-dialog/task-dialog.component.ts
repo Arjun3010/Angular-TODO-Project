@@ -22,6 +22,9 @@ export class TaskDialogComponent{
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.title = data.title;
+    if(data.task != null){
+      this.task = data.task;
+    }
   }
 
   onNoClick(): void {

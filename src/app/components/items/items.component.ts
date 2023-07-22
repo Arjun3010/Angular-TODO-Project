@@ -37,7 +37,8 @@ export class ItemsComponent implements OnInit {
   addTaskDialog(){   
     const dialogRef = this.dialog.open(TaskDialogComponent, {
       data: {
-        "title": "Add"
+        "title": "Add",
+        "data": null
       }
     });
 
@@ -115,18 +116,18 @@ export class ItemsComponent implements OnInit {
   }
 
   drop(event: CdkDragDrop<Task[]>) {
-    if (event.previousContainer === event.container) {
+    if (event.previousContainer === event.container) {     
       moveItemInArray(
         event.container.data,
         event.previousIndex,
         event.currentIndex
       );
-    } else {
+    } else {      
       
       let task = event.previousContainer.data[event.previousIndex];
-      if(this.currentCategoryTasks.indexOf(task) != -1){
+      if(this.currentCategoryTasks.indexOf(task) != -1)
         this.currentCategoryTasks.splice(this.currentCategoryTasks.indexOf(task), 1);
-      }
+      
       let status = "todo";
 
       if(event.container.id == "cdk-drop-list-1")
@@ -138,7 +139,6 @@ export class ItemsComponent implements OnInit {
         ...task,
         status: status
       }
-
       this.onEdit.emit([task, data]);
       transferArrayItem(
         event.previousContainer.data,

@@ -103,8 +103,6 @@ export class CategoryComponent implements OnInit {
   }
 
   updateTasks(index: number){
-    console.log('Index: ' + index)
-    console.log('Categories: ' + this.categories[index].category )
     this.todotasks = [];
     this.pendingtasks = [];
     this.completedtasks = [];
@@ -117,8 +115,6 @@ export class CategoryComponent implements OnInit {
       else
         this.todotasks.push(task);
     });
-
-    console.log(this.todotasks, this.completedtasks, this.pendingtasks)
   }
 
 }
